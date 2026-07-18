@@ -18,7 +18,12 @@ jobs:
         with:
           node-version: '20'
 
-      - name: EPG generatsiya (itv.uz -> XMLTV)
+      - name: https-proxy-agent o'rnatish (v5 - CommonJS)
+        run: npm install https-proxy-agent@5
+
+      - name: EPG generatsiya (itv.uz -> XMLTV, UZ proxy orqali)
+        env:
+          PROXY: http://195.158.8.123:3128
         run: node itv_epg_gen.js itv_epg 0
 
       - name: Release asset (repo hajmini oshirmaydi, URL barqaror)

@@ -1,12 +1,15 @@
 const https = require('https');
 const zlib = require('zlib');
 const fs = require('fs');
+// UZ proxy (itv.uz TAS-IX geo-restricted: US serverdan 63 kanal, UZ IP'dan 203). PROXY env bo'lsa o'sha orqali
+const _proxy = process.env.PROXY || '';
+const _agent = _proxy ? new (require('https-proxy-agent'))(_proxy) : undefined;
 const OUT = process.argv[2] || 'itv_epg';
 const LIMIT = parseInt(process.argv[3]) || 0; // 0 = barcha kanal
 
 function api(path){
   return new Promise((res)=>{
-    https.get('https://gw.itv.uz/api/v1/iptv/channels'+path, {headers:{'Referer':'https://itv.uz/','Origin':'https://itv.uz'}}, r=>{
+    https.get('https://gw.itv.uz/api/v1/iptv/channels'+path, {headers:{'Referer':'https://itv.uz/','Origin':'https://itv.uz'}, agent:_agent}, r=>{
       let d=''; r.on('data',c=>d+=c); r.on('end',()=>{ try{res(JSON.parse(d))}catch(e){res(null)} });
     }).on('error',()=>res(null));
   });
