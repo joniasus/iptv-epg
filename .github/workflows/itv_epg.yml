@@ -1,0 +1,29 @@
+name: itv-epg
+
+on:
+  schedule:
+    - cron: '0 23 * * *'   # har kuni 04:00 (UZB, UTC+5) — 23:00 UTC
+  workflow_dispatch:        # qo'lda ham ishga tushirish mumkin
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: EPG generatsiya (itv.uz -> XMLTV)
+        run: node itv_epg_gen.js itv_epg 0
+
+      - name: Release asset (repo hajmini oshirmaydi, URL barqaror)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: itv.uz EPG (har kuni avtomat yangilanadi)
+          files: itv_epg.xml.gz
